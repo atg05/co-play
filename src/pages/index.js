@@ -75,12 +75,16 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    console.log(activeSongUrl);
+  }, [activeSongUrl]);
+
+  useEffect(() => {
     const songs = getAllSongs();
     songs.then((result) => {
       setSongsLists(result);
     });
     // setSongsLists(songs);
-  }, [newSong, activeSongUrl]);
+  }, [newSong]);
 
   return (
     <>
