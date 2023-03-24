@@ -10,6 +10,7 @@ import { Button } from "react-bootstrap";
 
 export default function Home() {
   const [activeSongUrl, setActiveSongUrl] = useState(null);
+  const [activeSong, SetActiveSong] = useState({});
   const [newSong, setNewSong] = useState({});
   const [songsList, setSongsLists] = useState([]);
 
@@ -106,6 +107,7 @@ export default function Home() {
                   key={song.url}
                   onClick={() => {
                     updateActiveSong(song);
+                    SetActiveSong(song);
                     setActiveSongUrl(song.url);
                   }}
                 >
@@ -115,6 +117,7 @@ export default function Home() {
             })}
           </div>
           <div className={styles.right_container}>
+            <p className={styles.activeSong}>{activeSong.title || ""}</p>
             <MiniPlayer url={activeSongUrl} />
 
             <textarea
@@ -124,6 +127,7 @@ export default function Home() {
                 marginTop: "2em",
                 boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
               }}
+              className={styles.textArea}
               placeholder="Enter Complete Embed Code from youtube"
               onChange={handleEmbedUrl}
             />
