@@ -51,20 +51,28 @@ export default function Home() {
     }
   };
 
-  var song;
   const dbRef = ref(getDatabase());
-  const songUpdated = get(child(dbRef, `active`))
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        song = snapshot.val();
-        if (activeSongUrl !== song.url) setActiveSongUrl(song.url);
-      } else {
-        alert("No Data is Available");
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      console.log("Inside Interval");
+      get(child(dbRef, `active`))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            const song = snapshot.val();
+            if (activeSongUrl !== song.url) setActiveSongUrl(song.url);
+          } else {
+            alert("No Data is Available");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }, 5000); // 20 seconds in milliseconds
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     const songs = getAllSongs();
@@ -72,7 +80,7 @@ export default function Home() {
       setSongsLists(result);
     });
     // setSongsLists(songs);
-  }, [newSong]);
+  }, [newSong, activeSongUrl]);
 
   return (
     <>
