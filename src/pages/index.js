@@ -37,6 +37,7 @@ export default function Home() {
     });
     newSongs["title"] = videoTitle?.replace("&quot;", "");
     newSongs["title"] = videoTitle?.replace("&#39;", "");
+    newSongs["title"] = videoTitle?.replace("&amp", "");
     newSongs["url"] = videoUrl;
 
     if (!newSongs.title || !newSongs.url) {

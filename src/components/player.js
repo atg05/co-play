@@ -10,8 +10,6 @@ const MiniPlayer = ({ url }) => {
       height="200px"
       allow="autoplay;"
       loading="lazy"
-      frameBorder="0"
-      allowfullscreen
     />
   );
 };

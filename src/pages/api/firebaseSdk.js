@@ -33,7 +33,7 @@ export const addSong = async (songs) => {
     return;
   }
 
-  await setDoc(doc(firebaseDB, "songs", title), {
+  await setDoc(doc(firebaseDB, "songs", url), {
     title,
     url,
   })
