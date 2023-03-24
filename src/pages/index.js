@@ -3,12 +3,13 @@ import styles from "@/styles/Home.module.css";
 import Alert from "react-bootstrap/Alert";
 import { Inter } from "next/font/google";
 import Head from "next/head";
-import { useState } from "react";
-
-const inter = Inter({ subsets: ["latin"] });
+import { useEffect, useState } from "react";
+import { addSong, getAllSongs, updateActiveSong } from "./api/firebaseSdk";
+import { getDatabase, ref, onValue, get, child } from "firebase/database";
 
 export default function Home() {
   const [activeSongUrl, setActiveSongUrl] = useState(null);
+  const [newSong, setNewSong] = useState({});
   const [songsList, setSongsLists] = useState([]);
 
   const handleEmbedUrl = (e) => {
@@ -37,24 +38,39 @@ export default function Home() {
     newSongs["url"] = videoUrl;
 
     if (!newSongs.title || !newSongs.url) {
-      alert("Invalid");
-      return;
-    }
-    if (videoTitle?.toLowerCase()?.includes("audio")) {
-      alert("Please add audio only. Simply search song-name + audio only");
-    } else if (videoTitle?.toLowerCase()?.includes("lyric")) {
-    } else {
-      alert(
-        "Please add audio only. Simply search song-name + audio only / Lyric"
-      );
+      alert("Invalid url");
       return;
     }
 
-    if (true) setSongsLists((list) => [...list, newSongs]);
+    // if (true) setSongsLists((list) => [...list, newSongs]);
+    if (true) setNewSong(newSongs);
     else {
       alert("Not Vallid");
     }
   };
+
+  var song;
+  const dbRef = ref(getDatabase());
+  const songUpdated = get(child(dbRef, `active`))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        song = snapshot.val();
+        if (activeSongUrl !== song.url) setActiveSongUrl(song.url);
+      } else {
+        alert("No Data is Available");
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  useEffect(() => {
+    const songs = getAllSongs();
+    songs.then((result) => {
+      setSongsLists(result);
+    });
+    // setSongsLists(songs);
+  }, [newSong]);
 
   return (
     <>
@@ -65,15 +81,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <p
-          style={{
-            color: "#2F58CD",
-            fontSize: "5rem",
-            boxShadow: "rgb(38, 57, 77)",
-          }}
-        >
-          Co Player
-        </p>
+        <p className={styles.heading}>Co Player</p>
         <div className={styles.player_body}>
           <div className={styles.left_container}>
             {songsList.map((song, index) => {
@@ -81,40 +89,10 @@ export default function Home() {
                 <p
                   className={styles.each_song}
                   key={song.url}
-                  onClick={() => setActiveSongUrl(song.url)}
-                >
-                  {song.title}
-                </p>
-              );
-            })}
-            {songsList.map((song, index) => {
-              return (
-                <p
-                  className={styles.each_song}
-                  key={song.url}
-                  onClick={() => setActiveSongUrl(song.url)}
-                >
-                  {song.title}
-                </p>
-              );
-            })}
-            {songsList.map((song, index) => {
-              return (
-                <p
-                  className={styles.each_song}
-                  key={song.url}
-                  onClick={() => setActiveSongUrl(song.url)}
-                >
-                  {song.title}
-                </p>
-              );
-            })}
-            {songsList.map((song, index) => {
-              return (
-                <p
-                  className={styles.each_song}
-                  key={song.url}
-                  onClick={() => setActiveSongUrl(song.url)}
+                  onClick={() => {
+                    updateActiveSong(song);
+                    setActiveSongUrl(song.url);
+                  }}
                 >
                   {song.title}
                 </p>
@@ -131,8 +109,19 @@ export default function Home() {
                 marginTop: "2em",
                 boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
               }}
+              placeholder="Enter Complete Embed Code from youtube"
               onChange={handleEmbedUrl}
             />
+            <div>
+              <button
+                onClick={() => {
+                  addSong(newSong);
+                  setNewSong({});
+                }}
+              >
+                Add
+              </button>
+            </div>
           </div>
         </div>
       </main>
