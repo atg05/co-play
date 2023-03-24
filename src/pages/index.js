@@ -6,6 +6,7 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import { addSong, getAllSongs, updateActiveSong } from "./api/firebaseSdk";
 import { getDatabase, ref, onValue, get, child } from "firebase/database";
+import { Button } from "react-bootstrap";
 
 export default function Home() {
   const [activeSongUrl, setActiveSongUrl] = useState(null);
@@ -35,6 +36,7 @@ export default function Home() {
       }
     });
     newSongs["title"] = videoTitle?.replace("&quot;", "");
+    newSongs["title"] = videoTitle?.replace("&#39;", "");
     newSongs["url"] = videoUrl;
 
     if (!newSongs.title || !newSongs.url) {
@@ -113,14 +115,15 @@ export default function Home() {
               onChange={handleEmbedUrl}
             />
             <div>
-              <button
+              <Button
+                variant="primary"
                 onClick={() => {
                   addSong(newSong);
                   setNewSong({});
                 }}
               >
-                Add
-              </button>
+                Add Song
+              </Button>
             </div>
           </div>
         </div>
